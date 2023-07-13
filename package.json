@@ -1,0 +1,46 @@
+{
+  "name": "fe-challenge",
+  "version": "0.0.0",
+  "description": "FE Challenge for Mean Finance",
+  "scripts": {
+    "build": "webpack --config webpack.js",
+    "start": "webpack serve --config webpack.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mean-Finance/fe-challenge.git"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.8",
+    "@babel/preset-env": "^7.22.7",
+    "@babel/preset-react": "^7.22.5",
+    "@babel/preset-typescript": "^7.22.5",
+    "@types/lodash": "^4.14.195",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^9.0.2",
+    "@types/webpack-env": "^1.18.1",
+    "babel-loader": "^9.1.2",
+    "html-webpack-plugin": "^5.5.3",
+    "react-hot-loader": "^4.13.1",
+    "ts-loader": "^9.4.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.16",
+    "@types/node": "^20.4.1",
+    "axios": "^1.4.0",
+    "graphql": "^16.7.1",
+    "graphql-tag": "^2.12.6",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.14.1",
+    "uuid": "^9.0.0"
+  }
+}
