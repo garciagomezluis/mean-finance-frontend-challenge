@@ -1,3 +1,5 @@
+import "./main.css";
+
 import { PositionDashboard } from "./components/PositionDashboard";
 import { Dashboard } from "./components/Dashboard";
 import * as React from "react";

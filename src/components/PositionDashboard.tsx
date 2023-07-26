@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { formatBigInt } from "./../utils/bigIntParsing";
+import { formatBigInt } from "../lib/utils";
 import formatDistanceStrict from "date-fns/formatDistanceStrict";
 import addSeconds from "date-fns/addSeconds";
 import { usePositions } from "./../providers/positions";

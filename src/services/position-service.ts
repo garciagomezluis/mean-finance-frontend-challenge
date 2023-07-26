@@ -1,7 +1,7 @@
 import GET_POSITIONS from '../graphql/getPositions.graphql';
 import axios, { AxiosInstance } from 'axios';
 
-import gqlFetchAll from '../utils/gqlFetchAll';
+import gqlFetchAll from '../lib/gqlFetchAll';
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client';
 import TransactionService from './transaction-service';
 

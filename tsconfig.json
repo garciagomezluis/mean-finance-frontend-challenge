@@ -11,7 +11,10 @@
     "noImplicitThis": true,
     "strictNullChecks": true,
     "baseUrl": "./src",
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
     "src/**/*",

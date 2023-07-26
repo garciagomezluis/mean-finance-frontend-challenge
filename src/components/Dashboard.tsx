@@ -1,5 +1,5 @@
 import React from "react";
-import { formatBigInt } from "../utils/bigIntParsing";
+import { formatBigInt } from "../lib/utils";
 import { Link, useParams } from "react-router-dom";
 import { usePositions } from "./../providers/positions";
 
@@ -10,7 +10,7 @@ export function Dashboard() {
   if(!address) return <div>not found</div>;
 
   return (
-    <div>
+    <div className="bg-red-200">
       <p>User {address}</p>
 
       {positions.map((position) => {
