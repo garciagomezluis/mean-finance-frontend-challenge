@@ -42,6 +42,35 @@ type PositionResponse = {
   }[];
 };
 
+export type Position = {
+  from: {
+    decimals: number;
+    address: string;
+    name: string;
+    symbol: string;
+  },
+  to: {
+    decimals: number;
+    address: string;
+    name: string;
+    symbol: string;
+  },
+  user: string,
+  swapInterval: bigint,
+  rate: bigint,
+  remainingLiquidity: bigint,
+  remainingSwaps: bigint,
+  toWithdraw: bigint,
+  totalSwaps: bigint,
+  id: string,
+  status: string,
+  swaps: {
+    swapped: bigint,
+    timestamp: string,
+    rate: bigint,
+  }[]
+}
+
 function timeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -75,7 +104,7 @@ export default class PositionService {
     );
 
     return (
-      results.data?.positions.map((position: PositionResponse) => ({
+      results.data?.positions.map<Position>((position: PositionResponse) => ({
         from: position.from,
         to: position.to,
         user: position.user,
