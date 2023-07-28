@@ -1,3 +1,39 @@
+# Challenge solution
+
+https://mean-finance-frontend-challenge.vercel.app/
+## Comments on the challenge
+
+1. Requested features were implemented
+2. Actions on a position change the state on some other properties besides the requested ones. For example _closing_ a position sets the Remaining Liquidity to 0 since that effect could be expected in a real world application.
+3. Exists at least one known error that can be triggered while using the application. This is commented in the project.
+4. This implementation is far from being perfect. It attemps to show that I am able to use some frontend tools to create a proof of concept such as React, Tailwind, shadcn/ui. More features can be implemented in order to make this application useful such as Network Selection, User profile based on the connected account or Night/Light mode selection.
+5. On what could be done differently:
+   - SSR could improve the overall performance. NextJs could be considered.
+   - Tests need to be added. Specially e2e using for example Cypress. Ideally these can be triggered on the creation of a new PR on GitHub using something like GitHub Actions.
+   - Some refactoring could be useful.
+6. No major changes were implemented on the services provided.
+
+## Deployment and URLs
+
+This implementation is deployed on Vercel: https://mean-finance-frontend-challenge.vercel.app/
+
+* `/` and `/dashboard`: searcher (address) component view
+* `/dashboard/{address}`: dashboard with the positions of the `{address}`
+* `/dashboard/{address}/{positionId}`: dashboard with the details of the `{positionId}` for the `{address}`
+
+## Lighthouse test
+
+A [Lighthouse test](https://pagespeed.web.dev/analysis/https-mean-finance-frontend-challenge-vercel-app-dashboard-0x7afb052ae7b80aac6e559281cc261089738b66f6-2946/fb0e65n41e?form_factor=desktop) was run on PageSpeed Insights getting almost top score on all of the tested categories.
+
+![image](./images/lighthouse.jpeg)
+## Screenshots
+
+![image](./images/1.jpeg)
+![image](./images/2.jpeg)
+![image](./images/3.jpeg)
+
+## Some other related challenges I did
+1. [Rather Labs (Solidity Developer)](https://github.com/garciagomezluis/ratherlabs-challenge)
 
 # FE Challenge
 
