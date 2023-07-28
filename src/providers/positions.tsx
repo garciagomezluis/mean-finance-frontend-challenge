@@ -7,12 +7,15 @@ import React, {
   useState,
 } from "react";
 import PositionService, { Position } from "./../services/position-service";
+import { useInterval } from "react-use";
+import { useToast } from "@/components/ui/use-toast";
 
 const positionService = new PositionService();
 
 const Context = createContext<{
   positions: Position[];
-  tokenPrices: Record<string, number>;
+  loading: boolean;
+  tokens: Record<string, { price: number; symbol: string }>;
   withdraw: (id: string) => Promise<string>;
   close: (id: string) => Promise<string>;
   addFunds: (id: string, amount: number) => Promise<string>;
@@ -20,7 +23,8 @@ const Context = createContext<{
   hasPendingChange: (id: string) => boolean;
 }>({
   positions: [],
-  tokenPrices: {},
+  loading: true,
+  tokens: {},
   withdraw: () => Promise.resolve(""),
   close: () => Promise.resolve(""),
   addFunds: () => Promise.resolve(""),
@@ -42,75 +46,111 @@ export default function PositionProvider({
   children: ReactNode;
 }) {
   const [address, setAddress] = useState<string>();
-  const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [tokens, setTokens] = useState<
+    Record<string, { price: number; symbol: string }>
+  >({});
   const [positions, setPositions] = useState<Position[]>([]);
   const [pendingChanges, setPendingChanges] = useState<
     Record<string, { position: Position; modificationId: string }>
   >({});
 
-  const retryTimeoutRef = useRef<NodeJS.Timeout>();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!address) return;
 
-    positionService.fetchCurrentPositions(address).then(async (positions) => {
-      const tokens = [
-        ...new Set(
-          positions.reduce(
-            (prev, { from, to }) => [...prev, from.address, to.address],
-            []
+    setLoading(true);
+    positionService
+      .fetchCurrentPositions(address)
+      .then(async (positions) => {
+        const symbols: Record<string, string> = {};
+
+        const tokens = [
+          ...new Set(
+            positions.reduce((prev, { from, to }) => {
+              symbols[from.address] = from.symbol;
+              symbols[to.address] = to.symbol;
+              return [...prev, from.address, to.address];
+            }, [])
+          ),
+        ];
+
+        const tokenPrices = await positionService.getUsdPrice(tokens);
+
+        setTokens(
+          Object.entries(tokenPrices).reduce(
+            (prev, [tokenAddress, tokenPrice]) => {
+              return {
+                ...prev,
+                [tokenAddress]: {
+                  price: tokenPrice,
+                  symbol: symbols[tokenAddress],
+                },
+              };
+            },
+            {}
           )
-        ),
-      ];
-
-      const tokenPrices = await positionService.getUsdPrice(tokens);
-
-      setTokenPrices(tokenPrices);
-      setPositions(positions);
-    });
+        );
+        setPositions(positions);
+      })
+      .finally(() => setLoading(false));
   }, [address]);
 
-  useEffect(() => {
-    clearTimeout(retryTimeoutRef.current);
+  // useEffect(() => {
+  //   clearTimeout(retryTimeoutRef.current);
 
-    retryTimeoutRef.current = setTimeout(async () => {
-      const pending = Object.values(pendingChanges);
-      const statuses = await Promise.all(
-        pending.map(({ modificationId }) =>
-          positionService.getPositionTransactionStatus(modificationId)
-        )
-      );
+  //   retryTimeoutRef.current = setTimeout(async () => {
 
-      //   console.log(statuses, "**");
+  //   }, 1000);
+  // }, [pendingChanges]);
 
-      setPendingChanges(() =>
-        pending.reduce((prev, current, idx) => {
-          if (statuses[idx] === "PENDING") {
-            return {
-              ...prev,
-              [current.position.id]: current,
-            };
-          }
+  useInterval(async () => {
+    const pending = Object.values(pendingChanges);
+    const statuses = await Promise.all(
+      pending.map(({ modificationId }) =>
+        positionService.getPositionTransactionStatus(modificationId)
+      )
+    );
 
-          return prev;
-        }, {})
-      );
+    setPendingChanges(() =>
+      pending.reduce((prev, current, idx) => {
+        if (statuses[idx] === "PENDING") {
+          return {
+            ...prev,
+            [current.position.id]: current,
+          };
+        }
 
-      setPositions((positions) => {
-        return positions.map((position, idx) => {
-          const pendingIdx = pending.findIndex(
-            (e) => e.position.id === position.id
-          );
+        return prev;
+      }, {})
+    );
 
-          if (pendingIdx !== -1 && statuses[pendingIdx] === "SUCCESS") {
-            return pending[pendingIdx].position;
-          }
+    setPositions((positions) => {
+      return positions.map((position, idx) => {
+        const pendingIdx = pending.findIndex(
+          (e) => e.position.id === position.id
+        );
 
-          return position;
-        });
+        if (pendingIdx !== -1 && statuses[pendingIdx] === "SUCCESS") {
+          toast({
+            title: "Operation Success",
+            description: `Position ${pending[pendingIdx].position.from.symbol} - ${pending[pendingIdx].position.to.symbol} was modified`,
+          });
+          return pending[pendingIdx].position;
+        }
+
+        if (pendingIdx !== -1 && statuses[pendingIdx] === "FAILURE") {
+          toast({
+            title: "Operation Failure",
+            description: `Position ${pending[pendingIdx].position.from.symbol} - ${pending[pendingIdx].position.to.symbol} could not be modified. Please retry.`,
+          });
+        }
+
+        return position;
       });
-    }, 1000);
-  }, [pendingChanges]);
+    });
+  }, 5000);
 
   function hasPendingChange(id: string) {
     return typeof pendingChanges[id] !== "undefined";
@@ -144,7 +184,14 @@ export default function PositionProvider({
     setPendingChanges((prev) => ({
       ...prev,
       [id]: {
-        position: { ...position, rate: BigInt(0), toWithdraw: BigInt(0) },
+        position: {
+          ...position,
+          rate: BigInt(0),
+          remainingLiquidity: BigInt(0),
+          toWithdraw: BigInt(0),
+          remainingSwaps: BigInt(0),
+          status: "COMPLETED",
+        },
         modificationId,
       },
     }));
@@ -159,7 +206,9 @@ export default function PositionProvider({
 
     const modificationId = await positionService.modifyPosition();
 
-    const amountAsBigInt = BigInt(amount * Math.pow(10, position.from.decimals));
+    const amountAsBigInt = BigInt(
+      amount * Math.pow(10, position.from.decimals)
+    );
 
     setPendingChanges((prev) => ({
       ...prev,
@@ -167,7 +216,9 @@ export default function PositionProvider({
         position: {
           ...position,
           remainingLiquidity: position.remainingLiquidity + amountAsBigInt,
-          rate: (position.remainingLiquidity + amountAsBigInt) / position.remainingSwaps,
+          rate:
+            (position.remainingLiquidity + amountAsBigInt) /
+            position.remainingSwaps,
         },
         modificationId,
       },
@@ -180,7 +231,8 @@ export default function PositionProvider({
     <Context.Provider
       value={{
         positions: positions.map((e) => pendingChanges[e.id]?.position || e),
-        tokenPrices,
+        loading,
+        tokens,
         withdraw,
         close,
         addFunds,

@@ -74,8 +74,20 @@
   * {
     @apply border-border;
   }
+  html,
+  body,
+  #root {
+    min-height: 100vh;
+  }
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    min-width: 350px;
+    background: rgb(127, 109, 158);
+    background: linear-gradient(
+      0deg,
+      rgba(127, 109, 158, 1) 0%,
+      rgba(32, 74, 135, 1) 100%
+    );
   }
 }
