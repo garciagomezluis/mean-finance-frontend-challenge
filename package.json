@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "description": "FE Challenge for Mean Finance",
   "scripts": {
-    "build": "webpack --config webpack.js",
-    "start": "webpack serve --config webpack.js"
+    "build": "webpack --config webpack.js --mode production",
+    "start": "webpack serve --config webpack.js --mode development"
   },
   "repository": {
     "type": "git",
