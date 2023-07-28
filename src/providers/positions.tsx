@@ -3,7 +3,6 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import PositionService, { Position } from "./../services/position-service";
@@ -94,16 +93,13 @@ export default function PositionProvider({
         );
         setPositions(positions);
       })
+      .catch(() => {
+        setTokens({});
+        setPositions([]);
+        setPendingChanges({});
+      })
       .finally(() => setLoading(false));
   }, [address]);
-
-  // useEffect(() => {
-  //   clearTimeout(retryTimeoutRef.current);
-
-  //   retryTimeoutRef.current = setTimeout(async () => {
-
-  //   }, 1000);
-  // }, [pendingChanges]);
 
   useInterval(async () => {
     const pending = Object.values(pendingChanges);
@@ -133,6 +129,7 @@ export default function PositionProvider({
         );
 
         if (pendingIdx !== -1 && statuses[pendingIdx] === "SUCCESS") {
+          // this might throw an error
           toast({
             title: "Operation Success",
             description: `Position ${pending[pendingIdx].position.from.symbol} - ${pending[pendingIdx].position.to.symbol} was modified`,
@@ -141,6 +138,7 @@ export default function PositionProvider({
         }
 
         if (pendingIdx !== -1 && statuses[pendingIdx] === "FAILURE") {
+          // this might throw an error
           toast({
             title: "Operation Failure",
             description: `Position ${pending[pendingIdx].position.from.symbol} - ${pending[pendingIdx].position.to.symbol} could not be modified. Please retry.`,

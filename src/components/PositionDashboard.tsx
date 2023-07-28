@@ -127,8 +127,8 @@ function DashboardSkeleton({ address }: { address: string }) {
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         {Array(8)
           .fill("")
-          .map(() => (
-            <Card className={"p-5 space-y-3"}>
+          .map((e, i) => (
+            <Card className={"p-5 space-y-3"} key={i}>
               <div className="flex justify-between items-center">
                 <Skeleton className="h-[23px] w-full" />
               </div>
