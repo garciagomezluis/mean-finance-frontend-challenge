@@ -292,6 +292,7 @@ export function PositionDashboard() {
               className="flex-1 h-full"
               disabled={disableActions || toWithdraw.amount === 0}
               onClick={withdraw}
+              aria-label="withdraw"
             >
               Withdraw
             </Button>
@@ -302,6 +303,7 @@ export function PositionDashboard() {
               disabled={disableActions}
               variant="secondary"
               onClick={close}
+              aria-label="close"
             >
               Close
             </Button>
@@ -343,6 +345,7 @@ export function PositionDashboard() {
               disabled={disableActions || fundsToAdd === 0}
               variant="secondary"
               onClick={() => addFunds(fundsToAdd)}
+              aria-label="add funds"
             >
               Add funds
             </Button>

@@ -18,7 +18,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     <>
       <div className="w-full py-2 bg-blue-950 absolute inset-x-0 shadow-lg z-10 min-w-[350px]">
         <header className="max-w-7xl px-3 mx-auto flex justify-between items-center">
-          <Link to="/">
+          <Link to="/" aria-label="home">
             <MeanFinance
               className="hidden lg:block"
               width="200"
@@ -35,10 +35,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           </Link>
           <SearchInput className="hidden md:block" />
           <div className="flex gap-2">
-            <Button className="md:hidden" asChild>
+            <Button className="md:hidden" aria-label="search" asChild>
               <Link to="/">Search</Link>
             </Button>
-            <Button className="flex-1">Connect Wallet</Button>
+            <Button className="flex-1" aria-label="connect wallet">Connect Wallet</Button>
           </div>
         </header>
       </div>

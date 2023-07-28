@@ -174,6 +174,7 @@ export function Dashboard() {
                 to={`/dashboard/${address}/${position.id}`}
                 className="hover:shadow-xl"
                 key={position.id}
+                aria-label="position"
               >
                 <Card className="lg:max-w-[300px] relative overflow-hidden border-none">
                   {isPending ? (

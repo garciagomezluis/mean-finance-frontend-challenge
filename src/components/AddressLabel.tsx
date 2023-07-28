@@ -56,7 +56,7 @@ export function AddressBox({
       <div className="flex gap-3 items-center">
         <p>{address}</p>
         <CopyButton text={address} size={15} className="cursor-pointer" />
-        <Link to={link} target="_blank">
+        <Link to={link} target="_blank" aria-label="scanner">
           <LucideExternalLink size={15} />
         </Link>
       </div>
@@ -93,6 +93,7 @@ export function AddressLabel({
           <Link
             to={link}
             className="overflow-hidden whitespace-nowrap text-ellipsis"
+            aria-label="user alias"
           >
             {alias}
           </Link>

@@ -41,6 +41,7 @@ export default function SearchInput({
         size="icon"
         className="absolute right-0 top-0 h-full rounded-r-xl rounded-l-none"
         onClick={() => redirectHandler(value)}
+        aria-label="search"
       >
         <Search className="h-4 w-4" />
       </Button>
